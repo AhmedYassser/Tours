@@ -1,24 +1,44 @@
-import logo from './logo.svg';
 import './App.css';
+import { useEffect, useState } from 'react';
+import Tours from './componants/Tours';
+import axios from 'axios';
 
 function App() {
+  const [tours, setTours] = useState([]);
+
+  function removetour (id){
+    const newTours = tours.filter( (tour)=> tour.id !== id );
+    setTours(newTours);
+
+  }
+
+  async function Gettours() {
+    let { data } = await axios.get('https://course-api.com/react-tours-project');
+    setTours(data)
+  }
+  
+  useEffect(() => {
+    Gettours();
+  }, [])
+
+
+  if (tours.length === 0) {
+    return (
+      <main>
+        <div className='title'>
+          <h2>no tours left</h2>
+          <button className='btn' onClick={() => Gettours()}>
+            refresh
+          </button>
+        </div>
+      </main>
+    )
+  }
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Tours tours={tours} removetour={removetour}/> 
+    </>
   );
 }
 
